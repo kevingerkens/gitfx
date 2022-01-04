@@ -10,6 +10,8 @@ python fxparameterestimation_juergens.py
 
 python cnn_test_pitch_changes.py
 
+python cnn_parameter_estimation_noise.py
+
 python results_parameter_estimation.py
 
 conda deactivate
