@@ -12,6 +12,7 @@ import librosa
 import librosa.display
 import gc
 from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
+from cnn_parameter_estimation import choose_path
 import plots
 
 
@@ -61,9 +62,7 @@ def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_
 
 def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
     df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
-    os.chdir(path)
-    os.chdir(fx)
-    os.chdir('Noise')
+    choose_path(os.path.join(path, fx, 'Noise'))
     df_name = 'df_' + nn_setting + '.pickle'
     df.to_pickle(df_name)
 
@@ -140,7 +139,7 @@ def estimate(fx, feat, noise_factor):
 
         train_data, test_data, _ = scale_data(train_data, test_data)
 
-        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
         noise = np.random.normal(0, np.amax(test_data)*noise_factor, test_data.shape)
         test_data = test_data + noise
         example = test_data[2500]

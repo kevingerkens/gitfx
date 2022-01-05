@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 import pandas as pd
 import gc
 from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
-from cnn_parameter_estimation import scale_data, split_labels, fold_prediction
+from cnn_parameter_estimation import scale_data, split_labels, fold_prediction, choose_path
 import plots
 
 TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation Pitch Changes')
@@ -29,9 +29,7 @@ n_splits = 5        #number of kfold splits for cross validation
 
 def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
     df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
-    os.chdir(path)
-    os.chdir(fx)
-    os.chdir('Scale')
+    choose_path(os.path.join(path, fx, 'Scale'))
     df_name = 'df_' + nn_setting + '.pickle'
     df.to_pickle(df_name)
 
@@ -83,7 +81,7 @@ def estimate(fx, feat):
 
         train_data, _, scalers = scale_data(train_data, test_data=None)
 
-        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
 
         print("Loading model")
         file_name = 'CNNModel' + nn_setting + str(fold_no)
@@ -94,7 +92,6 @@ def estimate(fx, feat):
         all_pred, all_error, all_y, all_label = fold_prediction(my_model, test_data, all_pred, test_labels, all_error, all_y, all_label, label_test)
         fold_no += 1
 
-    
     create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_Scale', os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
 
     del data, labels, train_data, test_data, train_labels, test_labels

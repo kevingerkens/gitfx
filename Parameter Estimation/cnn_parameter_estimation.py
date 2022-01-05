@@ -128,7 +128,7 @@ def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_
 
 
 def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
-    os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
+    choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
     df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
     os.chdir(path)
     os.chdir(fx)
@@ -146,6 +146,14 @@ def fold_prediction(my_model, X_test, all_pred, y_test, all_error, all_y, all_la
     mean_error = np.mean(error, axis=0)
 
     return all_pred, all_error, all_y, all_label
+
+
+def choose_path(path):
+    isdir = os.path.isdir(path)
+    abs_path = os.path.abspath(path)
+    if isdir == False:
+        os.makedirs(abs_path, exist_ok=True)
+    os.chdir(abs_path)
 
 
 def estimate(fx, feat):
@@ -172,14 +180,14 @@ def estimate(fx, feat):
 
         X_train, X_test, _ = scale_data(X_train, X_test)
 
-        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
 
         my_model = get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, X_train, X_test, y_train, y_test, feat)
         all_pred, all_error, all_y, all_label = fold_prediction(my_model, X_test, all_pred, y_test, all_error, all_y, all_label, label_test)
 
         fold_no += 1
 
-    #create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
+    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
 
     del X, y, X_train, X_test, y_train, y_test              #   clear memory to save resources
     gc.collect()

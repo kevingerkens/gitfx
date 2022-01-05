@@ -174,6 +174,7 @@ def get_nn_values(file_name):
 def j_byvol(dr, par_names):
     old_cols = ['Prediction', 'Error', 'Labels', 'Mix Volume']
     new_cols = ['Prediction', 'Error', 'Labels', 'VST', 'Mix', 'Fx', 'Pitch', 'BP', 'Mix Volume']
+    os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', dr, 'Juergens'))
     df = pd.read_pickle('df_j.pickle')
     df.columns = old_cols
     df = df.explode(['Prediction', 'Error', 'Labels', 'Mix Volume'])
@@ -190,6 +191,15 @@ def j_byvol(dr, par_names):
         me_byvol.append(me_vol)
     me_byvol = np.array(me_byvol)
     plot_error_by_vol(me_byvol, par_names, dr, 'Jürgens et al.')
+    abs_error = np.array(df['Error'].tolist())
+    fold_errors = []
+    for index in range(5):
+        fold_mean = np.mean(abs_error[int(index*len(abs_error)/5):int(((index+1)*len(abs_error)/5)-1)], axis=0)
+        fold_errors.append(fold_mean)
+    std = np.std(fold_errors, axis=0)
+    ci_range = 1.96*(std/np.sqrt(5))
+    
+    return abs_error, ci_range
 
 
 def get_j_error(dr):
@@ -445,8 +455,7 @@ def scale_comparison():
 
 
 def get_juergens_data(dr, par_names):
-    j_error, j_ci = get_j_error(dr)
-    j_byvol(dr, par_names)
+    j_error, j_ci = j_byvol(dr, par_names)
     j_me = np.mean(j_error, axis=0)
 
     return j_error, j_ci, j_me
@@ -533,11 +542,11 @@ def result_plots(dr):
 if __name__ == '__main__':  
     fx = ['Distortion', 'Tremolo', 'SlapbackDelay', 'Chorus', 'Phaser', 'Reverb', 'Overdrive',
                 'DistortionTremolo', 'DistortionSlapbackDelay', 'TremoloSlapbackDelay', 'DistortionTremoloSlapbackDelay'] 
-    # for folder in fx:
-    #     result_plots(folder)
-    # for folder in fx:
-    #     if folder in ['Distortion', 'Tremolo', 'SlapbackDelay']:
-    #         multcomp(folder)
+    for folder in fx:
+        result_plots(folder)
+    for folder in fx:
+        if folder in ['Distortion', 'Tremolo', 'SlapbackDelay']:
+            multcomp(folder)
     scale_comparison()
 
 

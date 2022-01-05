@@ -12,8 +12,7 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn import preprocessing
 import joblib
 from keras import models, layers, optimizers, utils
-#from wavtoarray import DATA_PATH
-#import plots
+from cnn_parameter_estimation import choose_path
 
 DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation'))
 
@@ -221,13 +220,10 @@ def fold_prediction(my_model, X_test, all_pred, y_test, all_error, all_y, all_la
     return all_pred, all_error, all_y, all_label
 
 
-def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting):
+def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
     df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
-    os.chdir(DATA_PATH)
-    os.chdir(fx)
-    if not os.path.isdir(os.path.join(DATA_PATH, fx, 'Results')):
-        os.mkdir(os.path.join(DATA_PATH, fx, 'Results'))
-    df_name = str(DATA_PATH) + '/' + fx  + '/'  + 'Results' + '/' + 'df_j' + nn_setting + '.pickle'
+    choose_path(os.path.join(path, fx, 'Juergens'))
+    df_name = 'df_j' + '.pickle'
     df.to_pickle(df_name)
 
 
@@ -237,8 +233,6 @@ def estimate(folder_path):
     os.chdir(folder_path)
     print(folder_path)
     feat_data, feat_labels = check_for_features_and_labels(folder_path)
-    #os.chdir(DATA_PATH)
-    #os.chdir(folder_path)
     filenames = getfilename(folder_path)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -256,7 +250,7 @@ def estimate(folder_path):
 
         fold_no += 1
 
-    #create_dataframe(all_pred, all_error, all_y, all_label, folder_path, nn_setting='')
+    create_dataframe(all_pred, all_error, all_y, all_label, folder_path, nn_setting='')
 
 if __name__ == '__main__':
     fx = ['Distortion', 'Tremolo', 'SlapbackDelay']

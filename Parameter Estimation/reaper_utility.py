@@ -53,6 +53,8 @@ def create_guitar(track_nr, plugin):
     CurIt = CurIt[0]
     CurTk = RPR_GetMediaItemTake(CurIt, 0)
     RPR_MIDI_InsertNote(CurTk, False, False, 0, 3840, 1, PITCH+12, 110, False)[0]
+    if plugin == 'Ample Guitar LP.dll':
+        RPR_TrackFX_SetPreset(CurTr, 0, 'Clean')
     
 def create_bass(track_nr):
     RPR_InsertTrackAtIndex(track_nr, False)
