@@ -12,7 +12,7 @@ Download the dataset from x
 ## Get Started
 
 ### For the effect classification: 
-1.Navigate to the Classification folder and execute the clf.bat script
+1. Navigate to the Classification folder and execute the clf.bat script
 
 
 ### For the parameter estimation:
