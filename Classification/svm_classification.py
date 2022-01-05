@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from joblib import dump, load, parallel_backend
 from svm_features_classification import check_data, dataset_path
-from cnn_classification import plot_cm
+from cnn_classification import plot_cm, choose_path
 
 
 def confidence_interval(accuracy_all):
@@ -123,7 +123,7 @@ def train_svc(dataset):
         clf = get_classifier(fold_no, dataset, train_data=train_data, train_labels=train_labels, hyp_par_opt=False)
         y_true_all, pred_all, accuracy_all = fold_prediction(clf, test_data, test_labels, y_true_all, pred_all, accuracy_all)
 
-        os.chdir(os.path.join(dataset_path, '..', 'Results/Classification/SVM', dataset))
+        choose_path(os.path.join(dataset_path, '../..', 'Results/Classification/SVM', dataset))
         dump(clf, 'SVC' + str(fold_no) + '.joblib')
         print('SVC saved')
         fold_no +=1
@@ -131,8 +131,8 @@ def train_svc(dataset):
     pred_all = np.array(pred_all)
     confidence_interval(accuracy_all)
 
-    os.chdir(os.path.join(dataset_path, '..', 'Results/Classification/SVM', dataset))
-    plot_cm(np.array(y_true_all), np.array(pred_all), feat='svm')
+    choose_path(os.path.join(dataset_path, '../..', 'Results/Classification/SVM', dataset))
+    plot_cm(np.array(y_true_all), np.array(pred_all), feat='SVM')
 
     print('done')
 

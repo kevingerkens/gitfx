@@ -24,6 +24,14 @@ def onehot_mapping(folders):
     return mapping
 
 
+def choose_path(path):
+    isdir = os.path.isdir(path)
+    abs_path = os.path.abspath(path)
+    if isdir == False:
+        os.makedirs(abs_path, exist_ok=True)
+    os.chdir(abs_path)
+
+
 def load_features_and_labels(feat):
     X, y= [], []
     folders = os.listdir(os.getcwd())
@@ -198,7 +206,7 @@ def classification(feat, dataset):
         train_labels, test_labels = labels_onehot[train_index], labels_onehot[val_index]
         train_data, test_data = scale_features(train_data, test_data)
         
-        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
 
         my_model = get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, train_data, test_data, train_labels, test_labels, feat)
 
@@ -207,7 +215,7 @@ def classification(feat, dataset):
         fold_no += 1
 
     confidence_interval(accuracy_all)
-    os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
+    choose_path(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
     plot_cm(np.array(y_true_all), np.array(pred_all), feat)
     
     del data, labels_onehot, train_data, test_data, train_labels, test_labels
