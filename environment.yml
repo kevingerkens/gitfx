@@ -1,4 +1,4 @@
-name: guitarfxnew
+name: guitarfx
 channels:
   - defaults
 dependencies:
