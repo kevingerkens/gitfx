@@ -6,7 +6,7 @@ This repostory contains the source code to the paper "x". The paper compares dif
 
 Download the dataset from x
 
-1. Install anaconda, if not already installed
+1. Install anaconda, if not already installed. Tested with anaconda 4.10.1. 
 2. Create the necessary virtual environment by executing the env_install.bat script from an anaconda prompt.
 
 ## Get Started
