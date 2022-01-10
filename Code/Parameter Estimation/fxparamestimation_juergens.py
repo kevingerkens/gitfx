@@ -13,6 +13,7 @@ from sklearn import preprocessing
 import joblib
 from keras import models, layers, optimizers, utils
 from cnn_parameter_estimation import choose_path
+from cnnfeatextr import check_dataset
 
 DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation'))
 
@@ -108,6 +109,7 @@ def read_data(path_folder):
     train_labels = []
 
     os.chdir(path_folder)
+    check_dataset()
     for file_name in os.listdir(os.getcwd()):
         if file_name.endswith(".wav"):
             print(file_name)
