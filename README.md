@@ -4,19 +4,22 @@ This repostory contains the source code to the paper "x". The paper compares dif
 
 ## Installation
 
-Download the dataset from x
-
 1. Install anaconda, if not already installed. Tested with anaconda 4.10.1. 
 2. Create the necessary virtual environment by executing the env_install.bat script from an anaconda prompt.
 
 ## Get Started
 
 ### For the effect classification: 
-1. Navigate to the Classification folder and execute the clf.bat script
+1. Download the Classification dataset from https://seafile.cloud.uni-hannover.de/u/d/1754cd6cefe94c798e0f/, extract the .zip file and put the effects folders (Chorus, Distortion etc.) into the Datasets/Classification directory of this repository.
+2. Download the IDMT dataset from https://www.idmt.fraunhofer.de/en/publications/datasets/audio_effects.html#:~:text=The%20IDMT%2DSMT%2DAudio%2D,30%20hours., extract the .zip file and move the effects folders contained in the 'Gitarre monophon' folder to the Datasets/IDMT directory of this repository.
+3. Navigate to the Code/Classification directory of this repository.
+4. Execute the clf.bat script.
 
 
 ### For the parameter estimation:
-1. Navigate to the Parameter Estimation folder and execute the param_est.bat script
+1. Download the Parameter Estimation and Parameter Estimation Pitch Changes datasets from https://seafile.cloud.uni-hannover.de/u/d/1754cd6cefe94c798e0f/, extract the zip files and move the extracted folders to the Datasets directory of this repository.
+2. Navigate to the Code/Parameter Estimation directory of this repository.
+3. Execute the param_est.bat script.
 
 ## Dataset Generation
 
