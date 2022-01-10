@@ -11,6 +11,17 @@ import matplotlib.pyplot as plt
 DATA_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../..', 'Datasets')  
 
 
+def check_dataset():
+    wav_counter = 0
+    for file_name in os.listdir(os.getcwd()):
+        if file_name.endswith(".wav"):
+            wav_counter += 1
+        if wav_counter > 0:
+            break
+    if wav_counter == 0:
+        print('Cannot find dataset. Please follow the instructions provided at https://github.com/kevingerkens/gitfx.')
+
+
 def extract_features(y, sr, y1, sr1):
     """extracts spectogram, mfcc, chromagram and gfcc from audio file"""
     spectogram = np.abs(librosa.stft(y))
@@ -26,6 +37,7 @@ def get_features_and_labels(dr, dataset):
     """extracts labels and features from all audio files in directory"""
     os.chdir(os.path.join(DATA_PATH, dataset))
     os.chdir(dr)
+    check_dataset()
     print(dr)
     print('Extracting Features and Labels')
     all_specs, all_mfcc, all_chroma, all_gfcc = [], [], [], []
