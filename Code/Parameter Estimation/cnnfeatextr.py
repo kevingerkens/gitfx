@@ -54,11 +54,23 @@ def append_features_and_labels(all_specs, all_mfcc, all_chroma, all_gfcc, label_
     return all_specs, all_mfcc, all_chroma, all_gfcc, label_files
 
 
+def check_dataset():
+    wav_counter = 0
+    for file_name in os.listdir(os.getcwd()):
+        if file_name.endswith(".wav"):
+            wav_counter += 1
+        if wav_counter > 0:
+            break
+    if wav_counter == 0:
+        print('Cannot find dataset. Please follow the instructions provided at https://github.com/kevingerkens/gitfx.')
+    
+
 def get_features_and_labels(dr):
     """extracts labels and features from all audio files in directory"""
     os.chdir(DATA_PATH)
     os.chdir(dr)
     print(dr)
+    check_dataset()
     print('Extracting Data')
     all_specs, all_mfcc, all_chroma, all_gfcc = [], [], [], []
     label_files = []
