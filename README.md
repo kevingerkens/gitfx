@@ -5,7 +5,7 @@ This repostory contains the source code to the paper "x". The paper compares dif
 ## Installation
 
 1. Install anaconda, if not already installed. Tested with anaconda 4.10.1. 
-2. Create the necessary virtual environment by executing the env_install.bat script from an anaconda prompt.
+2. Create the necessary virtual environment by navigating to the Code directory and executing the env_install.bat script from an anaconda prompt.
 
 ## Get Started
 
