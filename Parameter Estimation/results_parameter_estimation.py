@@ -152,6 +152,28 @@ def get_df(file_name):
 
     return df
 
+def convert_df(file_name):
+    if 'df' in file_name and file_name.endswith('.pickle'):
+        df = get_df(file_name)
+        df.to_json(file_name[:-7] + '.json')
+
+def df_json():
+    os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
+    for dr in os.listdir(os.getcwd()):
+        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
+        os.chdir(dr)
+        for file_name in os.listdir(os.getcwd()):
+            convert_df(file_name)
+        if dr in ['Distortion', 'Tremolo', 'SlapbackDelay']:
+            for additional_folder in ['Juergens', 'Scale', 'Noise']:
+                os.chdir(additional_folder)
+                for file_name in os.listdir(os.getcwd()):
+                    convert_df(file_name)
+                os.chdir('..')
+        
+                
+    
+
 
 def get_nn_values(file_name):
     nn_setting = file_name[:-7].split('_')[1:]
