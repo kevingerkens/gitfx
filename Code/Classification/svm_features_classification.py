@@ -10,6 +10,7 @@ from parselmouth import praat
 from parselmouth.praat import call
 from pathlib import Path
 from sklearn import preprocessing
+from cnn_features_classification import check_dataset
 
 dataset_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../..', 'Datasets')
 
@@ -175,6 +176,7 @@ def extract_features(file_name, path):
 
        
 def read_data(dr):
+    check_dataset()
     print('Extracting feature data and labels')
     train_data, train_labels = [], []
     for file_name in os.listdir(os.getcwd()):
