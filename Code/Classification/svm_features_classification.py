@@ -212,7 +212,7 @@ def check_data(dr):
         
 
 if __name__ == '__main__':
-    for dataset in ['Classification', 'IDMT']: 
+    for dataset in ['GEC-GIM', 'IDMT']: 
         os.chdir(dataset_path)
         os.chdir(dataset)
         print(dataset)
