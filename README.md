@@ -36,7 +36,7 @@ The repository also contains the necessary scripts to generate the two new datas
 7. Load the necessary scripts via Actions > Action list: Classification/dataset_classification, Classification/reaper_utility.py, Parameter Estimation/dataset_parameter_estimation and Parameter/Estimation/reaper_utility.py.
 8. To generate the Classification dataset, run the dataset_classification.py script via the Actions list. For the Parameter Estimation dataset, run the dataset_parameter_estimation.py script.
 
-If you use this code in your work, please cite [1].
+If you use this code or the datasets (except IDMT) in your work, please cite [1].
 
 [1] Gerkens, K., Hinrichs, R., Ostermann, J.: Classification of Guitar Effects and Extraction of their Parameter Settings from Instrument Mixes Using Convolutional Neural Networks, Proceedings of the 11th International Conference 2022, Held as Part of EvoStar 2022, April 20th to 22nd 2022, Seville, Spain. (submitted) 
 
