@@ -8,7 +8,7 @@ import random
 from reaper_utility import *
 
 script_directory = os.path.dirname(__file__)
-file_directory = os.path.join(script_directory, '../..', 'Datasets/Classification')
+file_directory = os.path.join(script_directory, '../..', 'Datasets/GEC-GIM')
 
 RPR_RENDER_PATH = file_directory
 DIST_FX_SLOT = 1
