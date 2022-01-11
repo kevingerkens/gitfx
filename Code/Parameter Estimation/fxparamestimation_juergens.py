@@ -15,7 +15,7 @@ from keras import models, layers, optimizers, utils
 from cnn_parameter_estimation import choose_path
 from cnnfeatextr import check_dataset
 
-DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation'))
+DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/GEPE-GIM'))
 
 
 def get_dist_feat(y_cut, sr):
