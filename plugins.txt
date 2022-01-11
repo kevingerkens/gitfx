@@ -1,0 +1,14 @@
+# Instruments
+
+Ample Guitar LP - https://www.amplesound.net/en/pro-pd.asp?id=1
+Sonivox Bright Electric Guitar - https://sonivoxmi.com/products/details/bright-electric-guitar
+Bitsonic Keyzone Classic - https://plugins4free.com/plugin/2848/
+Manda Audio MT Power Drum Kit 2 - https://www.powerdrumkit.de/download76187.php
+Ample Sound ABPL II - https://plugins4free.com/plugin/2505/
+
+# Effects
+
+Pecheneg Tremolo - http://pechenegfx.org/plugins/pecheneg-tremolo/
+SimulAnalog Guitar Suite - https://www.simulanalog.org/guitarsuite.htm (only Tube Screamer and Rednef Twin/FenderTwin 1969)
+Buzzroom OctBuz - https://plugins4free.com/plugin/582/
+
