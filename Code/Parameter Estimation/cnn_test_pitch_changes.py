@@ -13,7 +13,7 @@ from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
 from cnn_param import scale_data, split_labels, fold_prediction, create_dataframe
 import plots
 
-TEST_PATH = os.path.join(os.path.dirname(__file__), '../..', 'Datasets/Parameter Estimation Pitch Changes')
+TEST_PATH = os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM Pitch Changes')
 
 model_params = {
     'conv_layers': [2],
