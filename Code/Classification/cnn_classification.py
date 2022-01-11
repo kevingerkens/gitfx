@@ -225,6 +225,6 @@ def classification(feat, dataset):
 
 if __name__ == "__main__":
     feats = ['Spec', 'Chroma', 'MFCC40', 'GFCC40']  
-    for dataset in ['Classification', 'IDMT']:  
+    for dataset in ['GEC-GIM', 'IDMT']:  
         for feat in feats:
             classification(feat, dataset)
