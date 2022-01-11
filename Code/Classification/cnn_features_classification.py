@@ -91,7 +91,7 @@ def check_for_feature_data(dr, dataset, feat=None):
 
 
 if __name__ == "__main__":
-    for dataset in ['Classification', 'IDMT']:
+    for dataset in ['GEC-GIM', 'IDMT']:
         os.chdir(os.path.join(DATA_PATH, dataset))
         for folder in os.listdir(os.getcwd()):
             check_for_feature_data(folder, dataset)
