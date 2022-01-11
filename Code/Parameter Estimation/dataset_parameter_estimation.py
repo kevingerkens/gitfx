@@ -9,7 +9,7 @@ import random
 from reaper_utility import *
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
-file_directory = os.path.join(script_directory, '../..', 'Datasets/Parameter Estimation')
+file_directory = os.path.join(script_directory, '../..', 'Datasets/GEPE-GIM')
 
 RPR_RENDER_PATH = Path(file_directory)
 PARAM_STEPS = 20
