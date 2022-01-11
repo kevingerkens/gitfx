@@ -11,7 +11,7 @@ This repostory contains the source code to the paper "x". The paper compares dif
 
 ### For the effect classification: 
 1. Download the Classification dataset from https://seafile.cloud.uni-hannover.de/u/d/1754cd6cefe94c798e0f/, extract the .zip file and put the effects folders (Chorus, Distortion etc.) into the Datasets/Classification directory of this repository.
-2. Download the IDMT dataset from https://www.idmt.fraunhofer.de/en/publications/datasets/audio_effects.html#:~:text=The%20IDMT%2DSMT%2DAudio%2D,30%20hours., extract the .zip file and move the effects folders contained in the 'Gitarre monophon' folder to the Datasets/IDMT directory of this repository.
+2. Download the IDMT dataset from https://www.idmt.fraunhofer.de/en/publications/datasets/audio_effects.html#:~:text=The%20IDMT%2DSMT%2DAudio%2D,30%20hours., extract the .zip file and move the effects folders contained in the 'Gitarre monophon/Samples' folder to the Datasets/IDMT directory of this repository.
 3. Navigate to the Code/Classification directory of this repository.
 4. Execute the clf.bat script.
 
