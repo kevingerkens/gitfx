@@ -17,7 +17,7 @@ This repostory contains the source code to the paper "x". The paper compares dif
 
 
 ### For the parameter estimation:
-1. Download the Parameter Estimation and Parameter Estimation Pitch Changes datasets from https://seafile.cloud.uni-hannover.de/u/d/1754cd6cefe94c798e0f/, extract the zip files and move the extracted effects folders to the Datasets/GEPE-GIM and datasets/GEPE-GIM Pitch Changes directories of this repository respectively.
+1. Download the Parameter Estimation and Parameter Estimation Pitch Changes datasets from https://seafile.cloud.uni-hannover.de/u/d/1754cd6cefe94c798e0f/, extract the zip files and move the effects folders (Distortion, Tremolo, etc.) to the Datasets/GEPE-GIM and datasets/GEPE-GIM Pitch Changes directories of this repository respectively.
 2. Navigate to the Code/Parameter Estimation directory of this repository.
 3. Execute the param_est.bat script.
 
