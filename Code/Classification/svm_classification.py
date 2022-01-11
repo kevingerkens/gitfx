@@ -137,6 +137,6 @@ def train_svc(dataset):
     print('done')
 
 if __name__ == '__main__':
-    for dataset in ['Classification', 'IDMT']:
+    for dataset in ['GEC-GIM', 'IDMT']:
         train_svc(dataset)
 
