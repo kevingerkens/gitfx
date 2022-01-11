@@ -8,7 +8,7 @@ from skimage.transform import rescale
 from spafe.features.gfcc import gfcc as sgfcc
 import matplotlib.pyplot as plt
 
-DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation'))
+DATA_PATH = Path(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/GEPE-GIM'))
 
 def param_names(dr):
     #returns variable parameters for the chosen effect
