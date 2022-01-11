@@ -8,7 +8,7 @@ import os
 import random
 from reaper_utility import *
 
-RPR_RENDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation Pitch Changes')
+RPR_RENDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/GEPE-GIM Pitch Changes')
 PARAM_STEPS = 20
 DIST_FX_SLOT = 1
 THREE_DB_FACTOR = 2**0.5
