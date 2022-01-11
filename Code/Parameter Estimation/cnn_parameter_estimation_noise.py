@@ -80,36 +80,37 @@ def fold_prediction(my_model, test_data, all_pred, test_labels, all_error, all_y
 
 
 def noise_plots(feat, fold_no, example, label, noise_factor):
-    if (feat == 'MFCC40' or feat == 'GFCC40') and fold_no == 5:
-        fig, ax = plt.subplots()
-        sr = 44100
-        sr_gfcc = sr*1.98/1.73
-        if feat == 'GFCC40':
-            img = librosa.display.specshow(example, x_axis='time', ax=ax, sr=sr_gfcc)
-        else:
-            img = librosa.display.specshow(example, x_axis='time', ax=ax, sr=sr)
-        plt.xlabel('Time in s')
-        plt.ylabel('Coefficients')
-        plt.yticks([*range(0, 45 , 5)])
-        fig.colorbar(img, ax=ax)
-    elif feat == 'Spec':
-        fig, ax = plt.subplots()
-        img = librosa.display.specshow(librosa.amplitude_to_db(example,
-                                                ref=np.max),
-                        y_axis='log', x_axis='time', ax=ax, sr=44100)
-        fig.colorbar(img, ax=ax, format="%+2.0f dB")
-        plt.xlabel('Time in s')
-        plt.ylabel('Frequency in Hz')
-    elif feat == 'Chroma':
-        fig, ax = plt.subplots()
-        img = librosa.display.specshow(example, y_axis='chroma', x_axis='time', ax=ax, sr=44100)
-        plt.xlabel('Time in s')
-        plt.ylabel('Pitch Class')
-        fig.colorbar(img, ax=ax)
-    plt.tight_layout()
-    file_name = '_'.join([str(elem) for elem in label])  + '_' + feat  + '_'  + 'alpha=' + str(noise_factor)+ '.pdf'
-    plt.savefig(file_name)
-    plt.clf()        
+    if fold_no ==5:
+        if feat == 'MFCC40' or feat == 'GFCC40':
+            fig, ax = plt.subplots()
+            sr = 44100
+            sr_gfcc = sr*1.98/1.73
+            if feat == 'GFCC40':
+                img = librosa.display.specshow(example, x_axis='time', ax=ax, sr=sr_gfcc)
+            else:
+                img = librosa.display.specshow(example, x_axis='time', ax=ax, sr=sr)
+            plt.xlabel('Time in s')
+            plt.ylabel('Coefficients')
+            plt.yticks([*range(0, 45 , 5)])
+            fig.colorbar(img, ax=ax)
+        elif feat == 'Spec':
+            fig, ax = plt.subplots()
+            img = librosa.display.specshow(librosa.amplitude_to_db(example,
+                                                    ref=np.max),
+                            y_axis='log', x_axis='time', ax=ax, sr=44100)
+            fig.colorbar(img, ax=ax, format="%+2.0f dB")
+            plt.xlabel('Time in s')
+            plt.ylabel('Frequency in Hz')
+        elif feat == 'Chroma':
+            fig, ax = plt.subplots()
+            img = librosa.display.specshow(example, y_axis='chroma', x_axis='time', ax=ax, sr=44100)
+            plt.xlabel('Time in s')
+            plt.ylabel('Pitch Class')
+            fig.colorbar(img, ax=ax)
+        plt.tight_layout()
+        file_name = '_'.join([str(elem) for elem in label])  + '_' + feat  + '_'  + 'alpha=' + str(noise_factor)+ '.pdf'
+        plt.savefig(file_name)
+        plt.clf()        
 
 
 def estimate(fx, feat, noise_factor):
