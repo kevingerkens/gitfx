@@ -49,7 +49,7 @@ def plot_cm(dr, classifier):
             plt.show()
 
 if __name__ == '__main__':
-    datasets = ['Classification', 'IDMT']
+    datasets = ['GEC-GIM', 'IDMT']
     classifiers = ['CNN', 'SVM']
     for classifier in classifiers:
         for set in datasets:
