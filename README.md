@@ -1,6 +1,6 @@
 # Audio Effect Extraction from Realistic Instrument Mixes
 
-This repostory contains the source code to the paper "x". The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
+This repostory contains the source code to the paper [1]. The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
 
 ## Installation
 
@@ -35,3 +35,8 @@ The repository also contains the necessary scripts to generate the two new datas
 6. Install Python 3.9.2 or higher and enable Python usage via Options > Preferences > Plug-Ins > ReaScript in Reaper.
 7. Load the necessary scripts via Actions > Action list: Classification/dataset_classification, Classification/reaper_utility.py, Parameter Estimation/dataset_parameter_estimation and Parameter/Estimation/reaper_utility.py.
 8. To generate the Classification dataset, run the dataset_classification.py script via the Actions list. For the Parameter Estimation dataset, run the dataset_parameter_estimation.py script.
+
+
+
+[1] Gerkens, K., Hinrichs, R., Ostermann, J.: Proceedings of the 11th International Conference 2022, Held as Part of EvoStar 2022, April 20th to 22nd 2022, Seville, Spain. (submitted) 
+
