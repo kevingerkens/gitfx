@@ -11,7 +11,7 @@ import numpy as np
 from scipy.io.wavfile import write
 from scipy import signal
 from pathlib import Path
-from cnn_features_classification import DATA_PATH
+from cnnfeatextr import DATA_PATH
 
 plt.rcParams["font.size"] = "30"
 
@@ -61,7 +61,7 @@ def plot_cnn_features(data, feature):
     plt.show()
 
 
-def feature_examples(file_name=os.path.join(os.path.dirname(__file__), '../..', 'Datasets/Parameter Estimation/Distortion/ag_G+K+B+D_Distortion_0.7_0.85_52_bp12_3.wav')):
+def feature_examples(file_name=os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM/Distortion/ag_G+K+B+D_Distortion_0.7_0.85_52_bp12_3.wav')):
     y, sr = librosa.load(file_name, sr=None)
     y_gfcc, sr_gfcc = librosa.load(file_name, sr=16000)
     spec = np.abs(librosa.stft(y))
@@ -74,7 +74,7 @@ def feature_examples(file_name=os.path.join(os.path.dirname(__file__), '../..', 
         plot_cnn_features(data, feature_list[index])
 
 
-def noise_feature_plots(path = os.path.join(os.path.dirname(__file__), '../..', 'Datasets/Parameter Estimation')):
+def noise_feature_plots(path = os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM')):
     fold_no = 5
     os.chdir(path)
     for fx in ['Distortion', 'Tremolo', 'SlapbackDelay']:
@@ -88,8 +88,8 @@ def noise_feature_plots(path = os.path.join(os.path.dirname(__file__), '../..', 
                 plot_cnn_features(feature_data, feature)
 
 
-def waveform(sample1=os.path.join(os.path.dirname(__file__), '../..', 'Datasets/Parameter Estimation/Tremolo/ag_G+K+B+D_Tremolo_1.0_0.15_52_bp12_-36.wav'), 
-    sample2=os.path.join(os.path.dirname(__file__),'../..', 'Datasets/Parameter Estimation/Tremolo/ag_G+K+B+D_Tremolo_1.0_0.15_52_bp12_3.wav')):
+def waveform(sample1=os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM/Tremolo/ag_G+K+B+D_Tremolo_1.0_0.15_52_bp12_-36.wav'), 
+    sample2=os.path.join(os.path.dirname(__file__),'../..', 'Datasets/GEPE-GIM/Tremolo/ag_G+K+B+D_Tremolo_1.0_0.15_52_bp12_3.wav')):
     plt.rcParams["lines.linewidth"] = 0.2
     plt.rcParams["font.size"] = "22"
     os.chdir(DATA_PATH)
