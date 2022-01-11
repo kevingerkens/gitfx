@@ -1,4 +1,4 @@
-# x (UNFINISHED)
+# Audio Effect Extraction from Realistic Instrument Mixes
 
 This repostory contains the source code to the paper "x". The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
 
