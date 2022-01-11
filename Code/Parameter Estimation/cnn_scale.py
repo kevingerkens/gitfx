@@ -13,7 +13,7 @@ from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
 from cnn_parameter_estimation import scale_data, split_labels, fold_prediction, choose_path
 import plots
 
-TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/Parameter Estimation Pitch Changes')
+TEST_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/GEPE-GIM Pitch Changes')
 
 
 """parameters for nn architecture"""
