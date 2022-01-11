@@ -1,6 +1,6 @@
 # Audio Effect Extraction from Realistic Instrument Mixes
 
-This repostory contains the source code to the paper [1]. The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
+This repository contains the source code to the paper [1]. The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
 
 ## Installation
 
