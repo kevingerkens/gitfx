@@ -151,7 +151,7 @@ def estimate(fx, feat, noise_factor):
 
         fold_no += 1
 
-    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_noise_' + str(noise_factor), os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
+    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_noisetest_' + str(noise_factor), os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
 
     del data, labels, train_data, test_data, train_labels, test_labels              #   clear memory to save resources
     gc.collect()
