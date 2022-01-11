@@ -8,6 +8,11 @@ Ample Sound ABPL II - https://plugins4free.com/plugin/2505/
 
 # Effects
 
+Kjaerhus Audio Classic Chorus - https://archive.org/download/classic-auto-filter/Info/Zip/classic_chorus_v128.zip
+Kjaerhus Audio Classic Delay - https://archive.org/download/classic-auto-filter/Info/Zip/classic_delay_v103.zip
+Kjaerhus Audio Classic Flanger - https://archive.org/download/classic-auto-filter/Info/Zip/classic_flanger_v109.zip
+Kjaerhus Audio Classic Phaser - https://archive.org/download/classic-auto-filter/Info/Zip/classic_phaser_v103.zip
+Kjaerhus Audio Classic Reverb - https://archive.org/download/classic-auto-filter/Info/Zip/classic_reverb_v106.zip
 Pecheneg Tremolo - http://pechenegfx.org/plugins/pecheneg-tremolo/
 SimulAnalog Guitar Suite - https://www.simulanalog.org/guitarsuite.htm (only Tube Screamer and Rednef Twin/FenderTwin 1969)
 Buzzroom OctBuz - https://plugins4free.com/plugin/582/
