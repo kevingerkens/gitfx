@@ -1,4 +1,4 @@
-# Audio Effect Extraction from Realistic Instrument Mixes
+# Classification of Guitar Effects and Extraction of their Parameter Settings from Instrument Mixes Using Convolutional Neural Networks
 
 This repository contains the source code to the paper [1]. The paper compares different methods for the classification and parameter estimation of guitar effects in instrument mixes. The code has been tested with Windows 10.
 
