@@ -38,5 +38,5 @@ The repository also contains the necessary scripts to generate the two new datas
 
 If you use this code or the datasets (except IDMT) in your work, please cite [1].
 
-[1] Gerkens, K., Hinrichs, R., Ostermann, J.: Classification of Guitar Effects and Extraction of their Parameter Settings from Instrument Mixes Using Convolutional Neural Networks, Proceedings of the 11th International Conference 2022, Held as Part of EvoStar 2022, April 20th to 22nd 2022, Seville, Spain. (submitted) 
+[1] Hinrichs, R., Gerkens, K., Ostermann, J.: Classification of Guitar Effects and Extraction of their Parameter Settings from Instrument Mixes Using Convolutional Neural Networks, Proceedings of the 11th International Conference 2022, Held as Part of EvoStar 2022, April 20th to 22nd 2022, Seville, Spain. (submitted) 
 
