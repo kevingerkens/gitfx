@@ -1,3 +1,5 @@
+Please use 64-bit versions if available.
+
 # Instruments
 
 Ample Guitar LP - https://www.amplesound.net/en/pro-pd.asp?id=1 (paid)
