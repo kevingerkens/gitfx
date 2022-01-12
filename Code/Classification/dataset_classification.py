@@ -5,10 +5,11 @@ from pathlib import Path
 import pickle
 import os
 import random
+import sys
 from reaper_utility import *
 
-script_directory = os.path.dirname(__file__)
-file_directory = os.path.join(script_directory, '../..', 'Datasets/GEC-GIM')
+repo_directory = 'C:/Users/Administrator/Documents/git-fx-main/Code/Classification'
+file_directory = os.path.abspath(os.path.join(repo_directory, '../..', 'Datasets/GEC-GIM'))
 
 RPR_RENDER_PATH = file_directory
 DIST_FX_SLOT = 1
@@ -30,9 +31,11 @@ def render_file(mix, fx, index, new_vals, plugin):
     pickle_data.append(PITCH)
     #prepare render info
     file_name = plugin + '_' + str(mix) + '_' +  str(fx) + str(PITCH) + '_' + str(index) + '_' 
-    RPR_GetSetProjectInfo_String(0, "RENDER_FILE", str(RPR_RENDER_PATH) + '\\' + str(fx), 1)
+    if not os.path.exists(os.path.join(file_directory + '\\' + fx)):
+        os.makedirs(os.path.join(file_directory + '\\' + fx))
+    RPR_GetSetProjectInfo_String(0, "RENDER_FILE", str(file_directory) + '\\' + str(fx), 1)
     RPR_GetSetProjectInfo_String(0, "RENDER_PATTERN",  str(file_name), 1)
-    data_file = str(RPR_RENDER_PATH) + '\\' + str(fx) + '\\' + str(file_name) + '.pickle'
+    data_file = str(file_directory) + '\\' + str(fx) + '\\' + str(file_name) + '.pickle'
     with open(data_file, 'wb') as handle:
         pickle.dump(pickle_data, handle)
     RPR_Main_OnCommand(40108, 0) #Normalize
@@ -109,7 +112,7 @@ def process_files():
         'G+K+B' : git_bass_keys,
         'G+K+B+D' : git_bass_keys_drums
      }
-    mix_names = ('G', 'G+B', 'G+K', 'G+HHC', 'G+KD', 'G+HHO''G+KD', 'G+C', 'G+SD', 'G+B+D', 'G+K+D', 'G+K+B', 'G+K+B+D')  
+    mix_names = ['G', 'G+B', 'G+K', 'G+HHC', 'G+KD', 'G+HHO''G+KD', 'G+C', 'G+SD', 'G+B+D', 'G+K+D', 'G+K+B', 'G+K+B+D'] 
     fx_list = ["Classic Chorus.dll", "OctBUZ.dll", "Classic Delay.dll", "Classic Flanger.dll", "Rednef Twin.dll", 
                 "Tube Screamer.dll", "Classic Phaser.dll", "Classic Reverb.dll", "Classic Delay.dll", "PechenegTremolo.dll", "Classic Chorus.dll"]
 

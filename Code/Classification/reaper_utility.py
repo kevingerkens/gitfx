@@ -170,8 +170,8 @@ def git_bass_keys(plugin):
     create_keys(2)
 
     
-def git_bass_keys_drums(pitch, plugin):
-    create_guitar(0, plugin, pitch)
+def git_bass_keys_drums(plugin):
+    create_guitar(0, plugin)
     create_bass(1)
     create_keys(2)
     CurTk = create_drums(3)
