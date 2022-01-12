@@ -8,6 +8,7 @@ import os
 import random
 from reaper_utility import *
 
+
 repo_directory = 'C:/Users/Administrator/Documents/git-fx-main/Code/Parameter Estimation'
 file_directory = os.path.abspath(os.path.join(repo_directory, '../..', 'Datasets/GEPE-GIM'))
 
@@ -23,7 +24,43 @@ git_plugin_dict = {
     'ag': 'Ample Guitar LP.dll',
     'sv': 'BrightElectricGuitar_x64.dll'
     }
-    
+
+
+def create_2parameter_grid():
+    param0 = [*range(1, PARAM_STEPS+1, 1)]
+    param1 = param0
+    settings = []
+    for i in param0:
+        for j in param1: 
+            settings.append([i/PARAM_STEPS, j/PARAM_STEPS])
+    return settings
+
+def create_3parameter_grid():
+    param0 = [*range(1, PARAM_STEPS+1, 1)]
+    param1 = param0
+    param2 = param0
+    settings = []
+    for i in param0:
+        for j in param1:
+            for k in param2:
+                settings.append([i/PARAM_STEPS, j/PARAM_STEPS, k/PARAM_STEPS])
+    return settings
+
+def get_settings(var_count):
+    if var_count == 1:
+        settings = [*range(1, PARAM_STEPS+1, 1)]
+    if var_count == 2:
+        settings = create_2parameter_grid()
+    if var_count == 3:
+        settings = create_3parameter_grid()
+    return settings
+
+
+def def get_folder_name(fx):
+    folders = ['Chorus', 'Phaser', 'Reverb', 'Overdrive']
+    folder = folders[fx]
+    return folder
+
 
 def render_file(mix, fx, setting, vol, pitch, bp_oct, plugin):  
     set_str = ''
@@ -40,6 +77,28 @@ def render_file(mix, fx, setting, vol, pitch, bp_oct, plugin):
     RPR_Main_OnCommand(40108, 0) #Normalize
     RPR_Main_OnCommand(41824, 0) #Render
     RPR_SetEditCurPos(0.0, True, False)
+
+
+def single_fx(fx_list, vol_list, mix_name, pitch, plugin):
+    for fx in range(len(fx_list)):
+        folder = get_folder_name(fx)
+        GitTr = RPR_GetTrack(0,0)
+        insert_fx(GitTr, fx_list[fx], mult_toggle = False)
+        var_par = get_variable_parameters(folder)
+        var_count = len(var_par)
+        set_default_parameter_values(GitTr, get_default_fx_values(folder), DIST_FX_SLOT)
+        for setting in get_settings(var_count):
+            for index, par_val in enumerate(setting):                       
+                change_parameter_value(GitTr, var_par[index], par_val, folder, 1)
+            for vol_exp in vol_list:
+                vol = OG_VOL*(THREE_DB_FACTOR**vol_exp)
+                set_vol(vol)
+                render_file(mix_name, folder, setting, vol_exp, pitch, 0, plugin)
+                if mix_name != 'G':
+                    bass_piano_pitch(12)
+                    render_file(mix_name, folder, setting, vol_exp, pitch, 12, plugin)
+                    bass_piano_pitch(-12)
+
 
 def get_parameter_name(fx, index):
     names = {'Chorus' : ['Rate', 'Depth'],
@@ -90,119 +149,6 @@ def get_variable_parameters(fx):
     var_params = params[fx]
     return var_params
 
-def get_folder_name(fx):
-    folders = ['Distortion', 'SlapbackDelay', 'Tremolo']
-    folder = folders[fx]
-    return folder
-
-def create_2parameter_grid():
-    param0 = [*range(1, PARAM_STEPS+1, 1)]
-    param1 = param0
-    settings = []
-    for i in param0:
-        for j in param1: 
-            settings.append([i/PARAM_STEPS, j/PARAM_STEPS])
-    return settings
-
-def create_3parameter_grid():
-    param0 = [*range(1, PARAM_STEPS+1, 1)]
-    param1 = param0
-    param2 = param0
-    settings = []
-    for i in param0:
-        for j in param1:
-            for k in param2:
-                settings.append([i/PARAM_STEPS, j/PARAM_STEPS, k/PARAM_STEPS])
-    return settings
-
-def get_settings(var_count):
-    if var_count == 1:
-        settings = [*range(1, PARAM_STEPS+1, 1)]
-    if var_count == 2:
-        settings = create_2parameter_grid()
-    if var_count == 3:
-        settings = create_3parameter_grid()
-    return settings
-
-def toggle_fx(GitTr, fx_onoff):
-    RPR_TrackFX_SetEnabled(GitTr, DIST_FX_SLOT, fx_onoff[0])
-    RPR_TrackFX_SetEnabled(GitTr, TREM_FX_SLOT, fx_onoff[1])
-    RPR_TrackFX_SetEnabled(GitTr, DLY_FX_SLOT, fx_onoff[2])
-
-def get_fx_slot(fx):
-    slots = {'Distortion': DIST_FX_SLOT,
-             'Tremolo': TREM_FX_SLOT,
-             'SlapbackDelay': DLY_FX_SLOT
-    }
-    return slots[fx]
-
-def single_fx(fx_list, vol_list, mix_name, pitch, plugin):
-    for fx in range(len(fx_list)):
-        folder = get_folder_name(fx)
-        GitTr = RPR_GetTrack(0,0)
-        insert_fx(GitTr, fx_list[fx], mult_toggle = False)
-        var_par = get_variable_parameters(folder)
-        var_count = len(var_par)
-        set_default_parameter_values(GitTr, get_default_fx_values(folder), DIST_FX_SLOT)
-        for setting in get_settings(var_count):
-            for index, par_val in enumerate(setting):                       
-                change_parameter_value(GitTr, var_par[index], par_val, folder, 1)
-            for vol_exp in vol_list:
-                vol = OG_VOL*(THREE_DB_FACTOR**vol_exp)
-                set_vol(vol)
-                render_file(mix_name, folder, setting, vol_exp, pitch, 0, plugin)
-                if mix_name != 'G':
-                    bass_piano_pitch(12)
-                    render_file(mix_name, folder, setting, vol_exp, pitch, 12, plugin)
-                    bass_piano_pitch(-12)
-
-def set_number_of_samples(combo):
-    if combo == [True, True, True]:
-        n_samples = 1200
-    else:
-        n_samples = 800
-    return n_samples
-
-def delete_all_track_fx(track):
-    fx_count = RPR_TrackFX_GetCount(track)
-    for fx in range(1, fx_count):
-        RPR_TrackFX_Delete(track, fx)
-
-def multi_fx(fx_list, vol_list, mix_name, pitch, plugin):
-    fx_combos = [[True, True, False], [True, False, True], [False, True, True], [True, True, True]]  
-    GitTr = RPR_GetTrack(0,0)  
-    for slot, fx in enumerate(fx_list):
-        add_fx(GitTr, fx, mult_toggle=True)
-        CurFx = get_folder(slot)
-        set_default_parameter_values(GitTr, get_fx_vals(CurFx), slot+1) 
-    for combo in fx_combos:
-        fx_active = []
-        for fx_id,i in enumerate(combo):
-            if i==True:
-                CurFx = get_folder(fx_id)
-                fx_active.append(CurFx) 
-        folder = ''.join(fx_active)
-        toggle_fx(GitTr, combo)
-        n_samples = set_number_of_samples(combo)
-        for _ in range(n_samples):
-            setting = []
-            for cur_fx in fx_active:
-                var_par = get_var_params(cur_fx)
-                vals = []
-                for par in var_par:
-                    val = round(random.random(), 2)
-                    change_parameter_value(GitTr, par, val, cur_fx, get_fx_slot(cur_fx))
-                    vals.append(val)
-                setting.extend(vals)
-            for vol_exp in vol_list:
-                vol = OG_VOL*(THREE_DB_FACTOR**vol_exp)
-                set_vol(vol)
-                render_file(mix_name, folder, setting, vol_exp, pitch, 0, plugin)
-                if mix_name != 'G':
-                    bass_piano_pitch(12)
-                    render_file(mix_name, folder, setting, vol_exp, pitch, 12, plugin)
-                    bass_piano_pitch(-12)
-    delete_all_track_fx(GitTr)
     
 def process_files():
     RPR_PreventUIRefresh(1)
@@ -210,7 +156,7 @@ def process_files():
     'G+K+B+D' : [git_bass_keys_drums, [-11, -7, -3, -1, 0, 1, 2]] 
     }
     mix_list = ['G+K+B+D']
-    fx_list =  ["OctBUZ.dll", "PechenegTremolo.dll", "Classic Delay.dll"] #"OctBUZ.dll",, "Classic Flanger.dll", "Rednef Twin.dll", "Tube Screamer.dll", "Classic Phaser.dll", "Classic Reverb.dll", "Classic Delay.dll", "PechenegTremolo.dll", "Classic Chorus.dll"]
+    fx_list =  ["Classic Chorus.dll", "Classic Phaser.dll", "Classic Reverb.dll", "Tube Screamer.dll"] 
     pitch_list = [40, 52]       
 
     for plugin in list(git_plugin_dict.keys()):
@@ -223,10 +169,6 @@ def process_files():
             transpose_note(GitTr, pitch_list[1]-pitch_list[0])
             single_fx(fx_list, vol_list, mix_name, pitch_list[1])
             RPR_TrackFX_Delete(GitTr, 1)
-            multi_fx(fx_list, vol_list, mix_name, pitch_list[0], plugin)
-            transpose_note(GitTr, pitch_list[1]-pitch_list[0])
-            multi_fx(fx_list, vol_list, mix_name, pitch_list[1])
-            track_count = RPR_CountTracks(0)
             for _ in range(track_count):
                 CurTr = RPR_GetTrack(0, 0)
                 RPR_DeleteTrack(CurTr)

@@ -8,7 +8,8 @@ import os
 import random
 from reaper_utility import *
 
-RPR_RENDER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../..', 'Datasets/GEPE-GIM Pitch Changes')
+repo_directory = 'C:/Users/Administrator/Documents/git-fx-main/Code/Parameter Estimation'
+file_directory = os.path.abspath(os.path.join(repo_directory, '../..', 'Datasets/GEPE-GIM Pitch Changes'))
 PARAM_STEPS = 20
 DIST_FX_SLOT = 1
 THREE_DB_FACTOR = 2**0.5
@@ -24,7 +25,9 @@ def render_file(mix, fx, setting, vol, pitch, bp_oct):
     str_vol = str(-3+vol*3)
     #prepare render info
     file_name = 'ag' + '_' + str(mix) + '_' +  str(fx)  + '_' + set_str + str(pitch) + '_' + str_bp + '_' + str_vol
-    RPR_GetSetProjectInfo_String(0, "RENDER_FILE", str(RPR_RENDER_PATH) + '\\' + str(mix) + '\\' + str(fx), 1)
+    if not os.path.exists(os.path.join(file_directory + '\\' + fx)):
+            os.makedirs(os.path.join(file_directory + '\\' + fx))
+    RPR_GetSetProjectInfo_String(0, "RENDER_FILE", str(file_directory) + '\\' + str(mix) + '\\' + str(fx), 1)
     RPR_GetSetProjectInfo_String(0, "RENDER_PATTERN",  str(file_name), 1)
     RPR_Main_OnCommand(40108, 0) #Normalize
     RPR_Main_OnCommand(41824, 0) #Render
@@ -130,13 +133,13 @@ def single_fx(fx_list, vol_list, mix_name, pitch):
     for fx in range(len(fx_list)):
         folder = get_folder(fx)
         GitTr = RPR_GetTrack(0,0)
-        add_fx(GitTr, fx_list[fx], mult_toggle = False)
+        insert_fx(GitTr, fx_list[fx], mult_toggle = False)
         var_par = get_var_params(folder)
         var_count = len(var_par)
-        set_params(GitTr, get_fx_vals(folder), DIST_FX_SLOT)
+        set_default_parameter_values(GitTr, get_fx_vals(folder), DIST_FX_SLOT)
         for setting in get_settings(var_count):
             for index, par_val in enumerate(setting):                       
-                change_param(GitTr, var_par[index], par_val, folder, 1)
+                change_parameter_value(GitTr, var_par[index], par_val, folder, 1)
             for vol_exp in vol_list:
                 vol = OG_VOL*(THREE_DB_FACTOR**vol_exp)
                 set_vol(vol)
@@ -145,7 +148,7 @@ def single_fx(fx_list, vol_list, mix_name, pitch):
                     bass_piano_pitch(1)
                     render_file(mix_name, folder, setting, vol_exp, pitch, bp)
                 bass_piano_pitch(-11)
-                s
+                
 
 def delete_all_tracks():
     track_count = RPR_CountTracks(0)
@@ -157,7 +160,7 @@ def delete_all_tracks():
 def process_files():
     RPR_PreventUIRefresh(1)
     mix_dict = {
-    'G+K+B+D' : [git_bass_keys_drums, [-3, 0, 1]] #-11, -7, -3, -1, 0, 1, 
+    'G+K+B+D' : [git_bass_keys_drums, [-3, 0, 1]] 
     }
 
     mix_list = ['G+K+B+D']
@@ -165,7 +168,7 @@ def process_files():
     pitch_list = [40]              
     
     for mix_id, mix in enumerate(mix_list):
-        mix_dict[mix][0](pitch_list[0])
+        mix_dict[mix][0](pitch_list[0], 'Ample Guitar LP.dll')
         vol_list = mix_dict[mix][1]
         mix_name = mix_list[mix_id]
         GitTr = RPR_GetTrack(0, 0)

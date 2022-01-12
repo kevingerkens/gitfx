@@ -20,31 +20,44 @@ def delete_all_tracks():
         CurTr = RPR_GetTrack(0, 0)
         RPR_DeleteTrack(CurTr)
 
-def insert_fx(CurTr, fx_name, multi_toggle):
-    if multi_toggle == False:
+def insert_fx(CurTr, fx_name, mult_toggle):
+    if mult_toggle == False:
         RPR_TrackFX_Delete(CurTr, 1)        #clear fx slot, add plugin
     RPR_TrackFX_AddByName(CurTr, fx_name, False, -1)
     
-def set_default_parameter_values(CurTr, param_vals):
+def set_default_parameter_values(CurTr, param_vals, slot):
     for index, param in enumerate(param_vals):
-        RPR_TrackFX_SetParam(CurTr, DIST_FX_SLOT, index, param_vals[index])
+        RPR_TrackFX_SetParam(CurTr, slot, index, param_vals[index])
         
-def change_parameter_value(CurTr, param, fx):
-    val = random.uniform(0.0, 1.0)
-    og_val = val
+        
+def change_parameter_value(CurTr, param, val, fx, slot):
     if (fx == 'SlapbackDelay' or fx == 'FeedbackDelay') and (param == 6 or param == 12):
         val = val * 0.5
-    if fx == 3 and param == 3:
+    if fx == 'Flanger' and param == 3:
         val = (val + 1) * 0.5    
-    RPR_TrackFX_SetParam(CurTr, DIST_FX_SLOT, param, val)
-    return val, og_val
+    RPR_TrackFX_SetParam(CurTr, slot, param, val)
+
     
 def git_pitch(CurIt, pitch):
     CurTk = RPR_GetMediaItemTake(CurIt, 0)
     
     RPR_MIDI_SetNote(CurTk, 0, False, False, -1, -1, -1, pitch, -1, True)
     
-def create_guitar(track_nr, plugin):
+    
+def transpose_note(CurTr, interval):
+    CurIt = RPR_GetTrackMediaItem(CurTr, 0)
+    CurTk = RPR_GetMediaItemTake(CurIt, 0)
+    CurPitch = RPR_MIDI_GetNote(CurTk, 0, 0, 0, 0, 0, 0, 0, 0)[8]
+    RPR_MIDI_SetNote(CurTk, 0, False, False, -1, -1, -1, CurPitch+interval, -1, True)
+
+
+def bass_piano_pitch(interval):
+    for trackid in [1, 2]:
+        CurTr = RPR_GetTrack(0, trackid)
+        transpose_note(CurTr, interval)  
+  
+    
+def create_guitar(track_nr, plugin, pitch):
     RPR_InsertTrackAtIndex(track_nr, False)
     CurTr = RPR_GetTrack(0, track_nr)
     RPR_TrackFX_AddByName(CurTr, plugin, False, -1)
@@ -52,7 +65,7 @@ def create_guitar(track_nr, plugin):
     CurIt = RPR_CreateNewMIDIItemInProj(CurTr, 0, 4, True)
     CurIt = CurIt[0]
     CurTk = RPR_GetMediaItemTake(CurIt, 0)
-    RPR_MIDI_InsertNote(CurTk, False, False, 0, 3840, 1, PITCH+12, 110, False)[0]
+    RPR_MIDI_InsertNote(CurTk, False, False, 0, 3840, 1, pitch, 110, False)[0]
     if plugin == 'Ample Guitar LP.dll':
         RPR_TrackFX_SetPreset(CurTr, 0, 'Clean')
     
@@ -103,52 +116,52 @@ def create_drums(track_nr):
     
     return CurTk
     
-def git_solo(plugin):
-    create_guitar(0, plugin)
+def git_solo(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     
-def git_bass(plugin):
-    create_guitar(0, plugin)
+def git_bass(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     create_bass(1)
     #set_vol(1, 0.125)
     
     
-def git_keys(plugin):
+def git_keys(plugin, pitch):
     create_guitar(0, plugin)
     create_keys(1)
     #set_vol(1, 0.25)
     
-def git_kick(plugin):
-    create_guitar(0, plugin)
+def git_kick(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     CurTk = create_drums(1)
     kick_drum(CurTk)
     #set_vol(1, 0.125)
 
-def git_snare(plugin):
-    create_guitar(0, plugin)
+def git_snare(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     CurTk = create_drums(1)
     snare(CurTk)
     #set_vol(1, 0.125)
     
-def git_hh_closed(plugin):
-    create_guitar(0, plugin)
+def git_hh_closed(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     CurTk = create_drums(1)
     hh_closed(CurTk)
     #set_vol(1, 0.125)
     
-def git_hh_open(plugin):
-    create_guitar(0, plugin)
+def git_hh_open(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     CurTk = create_drums(1)
     hh_open(CurTk)
     #set_vol(1, 0.125)
     
-def git_cymbal(plugin):
-    create_guitar(0, plugin)
+def git_cymbal(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     CurTk = create_drums(1)
     cymbal(CurTk)
     #set_vol(1, 0.125)
     
-def git_bass_drums(plugin):
-    create_guitar(0, plugin)
+def git_bass_drums(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     create_bass(1)
     #set_vol(1, 0.125)
     CurTk = create_drums(2)
@@ -157,8 +170,8 @@ def git_bass_drums(plugin):
     snare(CurTk)
     hh_closed(CurTk)
     
-def git_keys_drums(plugin):
-    create_guitar(0, plugin)
+def git_keys_drums(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     create_keys(1)
     #set_vol(1, 0.125)
     CurTk = create_drums(2)
@@ -167,8 +180,8 @@ def git_keys_drums(plugin):
     snare(CurTk)
     hh_closed(CurTk)
     
-def git_bass_keys(plugin):
-    create_guitar(0, plugin)
+def git_bass_keys(plugin, pitch):
+    create_guitar(0, plugin, pitch)
     create_bass(1)
     #set_vol(1, 0.125)
     create_keys(2)
@@ -186,8 +199,8 @@ def git_bass_keys_drums(pitch, plugin):
     snare(CurTk)
     hh_closed(CurTk)    
     
-def set_vol():  # lower volume of other instruments
-        track_count = RPR_CountTracks(0)
-        for track in range(track_count-1):
-          CurTr = RPR_GetTrack(0, (track+1))
-          RPR_SetMediaTrackInfo_Value(CurTr, "D_VOL", 0.15)
+def set_vol(vol):  # lower volume of other instruments
+    track_count = RPR_CountTracks(0)
+    for track in range(track_count-1):
+      CurTr = RPR_GetTrack(0, (track+1))
+      RPR_SetMediaTrackInfo_Value(CurTr, "D_VOL", vol)   
