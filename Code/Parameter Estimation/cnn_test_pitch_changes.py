@@ -3,17 +3,20 @@ import platform
 import joblib
 from pathlib import Path
 import numpy as np
+import librosa
+from skimage.transform import rescale
+from spafe.features.gfcc import gfcc as sgfcc
 from tensorflow import keras
-from tensorflow.keras import models, layers, optimizers, utils
+from tensorflow.keras import models, layers, optimizers, utils, backend
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold
 import pandas as pd
 import gc
-from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
-from cnn_param import scale_data, split_labels, fold_prediction, create_dataframe
+from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names, check_dataset, extract_features, append_features_and_labels, get_feat_str
+from cnn_parameter_estimation import scale_data, split_labels, fold_prediction, choose_path
 import plots
 
-TEST_PATH = os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM Pitch Changes')
+TEST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'Datasets/GEPE-GIM Pitch Changes'))
 
 model_params = {
     'conv_layers': [2],
@@ -35,20 +38,67 @@ batch_size = 128
 n_splits = 5        #number of kfold splits for cross validation
 
 
-def get_test_data(dr, feat):
+def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
+    choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx, 'Scale'))
+    df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
+    df_name = 'df_' + nn_setting + '.pickle'
+    df.to_pickle(df_name)
+
+
+def get_test_features_and_labels(dr):
+    """extracts labels and features from all audio files in directory"""
     os.chdir(TEST_PATH)
     os.chdir(dr)
-    print('Loading feature data and labels')
-    labels = np.load('CNNLabels.npz')['arr_0']
-    print(feat)
+    print(dr)
+    check_dataset()
+    print('Extracting Data')
+    all_specs, all_mfcc, all_chroma, all_gfcc = [], [], [], []
+    label_files = []
+    for file_name in os.listdir(os.getcwd()):
+        if file_name.endswith(".wav"):
+            print(file_name)
+            label = file_name[:-4].split(sep='_')
+            y, sr = librosa.load(file_name, sr=None)
+            y = librosa.util.normalize(y)
+            y1, sr1 = librosa.load(file_name, sr=16000)
+            y1 = librosa.util.normalize(y1)
+            spectogram, mfcc, chroma, gfcc = extract_features(y, sr, y1, sr1)
+            all_specs, all_mfcc, all_chroma, all_gfcc, label_files = append_features_and_labels(all_specs, all_mfcc, all_chroma, 
+                                                                all_gfcc, label_files, spectogram, mfcc, chroma, gfcc, label)
+    all_specs = np.array(all_specs)
+    all_mfcc = np.array(all_mfcc)
+    all_chroma = np.array(all_chroma)
+    all_gfcc = np.swapaxes(np.array(all_gfcc), 1, 2)
+    label_files = np.array(label_files)
+    
+    return  all_specs, all_mfcc, all_chroma, all_gfcc, label_files
 
-    data = np.load(str(feat) + '.npz')['arr_0']
-    print('Finished loading feature data and labels')
+
+
+def check_for_test_data(dr, feat=None):
+    os.chdir(os.path.join(TEST_PATH, dr))
+    print(dr)
+    if not Path('CNNLabels.npz').exists():
+        spec, mfcc, chroma, gfcc, labels = get_test_features_and_labels(dr) 
+        np.savez('Spec.npz', spec)
+        np.savez('MFCC40.npz', mfcc)
+        np.savez('Chroma.npz', chroma)
+        np.savez('GFCC40.npz', gfcc)
+        np.savez('CNNLabels.npz', labels)
+        print('All Data saved')
+        data = get_feat_str(feat, spec, chroma, mfcc, gfcc)
+    elif Path('CNNLabels.npz').exists() and feat is not None:
+        print('Loading feature data and labels')
+        labels = np.load('CNNLabels.npz')['arr_0']
+        print(feat)
+        data = np.load(feat + '.npz')['arr_0']
+        print('Finished loading feature data and labels')
+
     return np.array(data), np.array(labels)
 
 
-def load_and_scale_test_data(scalers, no_params):
-    X_test, y_test = get_test_data(fx, feat)
+def load_and_scale_test_data(scalers, no_params, fx, feat):
+    X_test, y_test = check_for_test_data(fx, feat)
     for i in range(X_test.shape[1]):
         X_test[:, i, :] = scalers[i].transform(X_test[:, i, :])
     X_test = np.expand_dims(X_test, axis=3) 
@@ -82,18 +132,19 @@ def estimate(fx, feat):
 
         X_train, _, scalers = scale_data(X_train, X_test=None)
 
-        os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
 
+        backend.clear_session()
         print("Loading model")
         file_name = 'CNNModel' + nn_setting + str(fold_no)
         my_model = models.load_model(file_name)
         print('Model loaded')
 
-        X_test, y_test, label_test = load_and_scale_test_data(scalers, no_params)
+        X_test, y_test, label_test = load_and_scale_test_data(scalers, no_params, fx, feat)
         all_pred, all_error, all_y, all_label = fold_prediction(my_model, X_test, all_pred, y_test, all_error, all_y, all_label, label_test)
         fold_no += 1
 
-    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_Scale', os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
+    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_Scale', os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
 
     del X, y, X_train, X_test, y_train, y_test
     gc.collect()

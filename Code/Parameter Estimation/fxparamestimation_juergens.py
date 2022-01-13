@@ -114,7 +114,7 @@ def read_data(path_folder):
         if file_name.endswith(".wav"):
             print(file_name)
             y, sr = librosa.load(file_name, sr=44100)
-            label = file_name[:-4].split('_')[3:5].astype(np.float)
+            label = file_name[:-4].split('_')
             train_labels.append(label)
             y = np.insert(y, 0, np.zeros(1023))
             y = librosa.util.normalize(y)
@@ -143,10 +143,17 @@ def read_data(path_folder):
     print(train_data.shape)
     scaler = preprocessing.StandardScaler()
     train_data = scaler.fit_transform(train_data)
-
-    train_labels = np.array(train_labels)
     os.chdir(DATA_PATH)
+
     return train_data, train_labels
+
+
+def split_labels(y):
+    y = np.array(y)
+    labels = np.delete(y, np.s_[3:5], axis=1)
+    y = y[:, 3:5].astype(float)
+
+    return y, labels
 
 
 def create_model(input_dim, output_dim):
@@ -160,14 +167,8 @@ def create_model(input_dim, output_dim):
     model.compile(optimizer=optimizers.Adam(),
                   loss='mean_squared_error',
                   metrics=['mse'])
+                  
     return model
-
-def getfilename(dr):
-    os.chdir(DATA_PATH)
-    os.chdir(dr)
-    filenames = np.load('Labels.npz')['arr_0'] 
-    filenames = np.delete(filenames, np.s_[3:5], axis=1)   
-    return filenames
 
 
 def train_model(model, train_data, train_labels, test_data, test_labels):
@@ -188,13 +189,13 @@ def check_for_features_and_labels(folder_path):
         print('Loading feature data and labels...')
         data = np.load('ParamEst.npz')
         feat_data = data['X']
-        feat_labels = data['y'].astype(np.float)
+        feat_labels = data['y']
 
     return feat_data, feat_labels
 
 
 def get_model(fold_no, train_data, train_labels, folder_path, test_data, test_labels):
-    os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', folder_path))
+    choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', folder_path, 'Juergens'))
     if not Path('ParamEstModel' + str(fold_no) + '.pickle').exists():
 
         my_model = create_model(train_data.shape[1], train_labels.shape[1])
@@ -222,7 +223,7 @@ def fold_prediction(my_model, X_test, all_pred, y_test, all_error, all_y, all_la
     return all_pred, all_error, all_y, all_label
 
 
-def create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, path):
+def create_dataframe(all_pred, all_error, all_y, all_label, fx, path):
     df = pd.DataFrame(zip(all_pred, all_error, all_y, all_label))
     choose_path(os.path.join(path, fx, 'Juergens'))
     df_name = 'df_j' + '.pickle'
@@ -235,7 +236,7 @@ def estimate(folder_path):
     os.chdir(folder_path)
     print(folder_path)
     feat_data, feat_labels = check_for_features_and_labels(folder_path)
-    filenames = getfilename(folder_path)
+    labels, add_labels = split_labels(feat_labels)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
     fold_no = 1
@@ -243,18 +244,19 @@ def estimate(folder_path):
 
     for train_index, val_index in kf.split(feat_data):
         print(fold_no)
-        train_data, train_labels = feat_data[train_index], feat_labels[train_index]
-        test_data, test_labels = feat_data[val_index], feat_labels[val_index]
-        label_train, label_test = filenames[train_index], filenames[val_index]
+        train_data, train_labels = feat_data[train_index], labels[train_index]
+        test_data, test_labels = feat_data[val_index], labels[val_index]
+        label_train, label_test = add_labels[train_index], add_labels[val_index]
 
         my_model = get_model(fold_no, train_data, train_labels, folder_path, test_data, test_labels)
         all_pred, all_error, all_y, all_label = fold_prediction(my_model, test_data, all_pred, test_labels, all_error, all_y, all_label, label_test)
 
         fold_no += 1
 
-    create_dataframe(all_pred, all_error, all_y, all_label, folder_path, nn_setting='')
+    create_dataframe(all_pred, all_error, all_y, all_label, folder_path, os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
 
 if __name__ == '__main__':
     fx = ['Distortion', 'Tremolo', 'SlapbackDelay']
+    print('Parameter Estimation Jürgens et al.')
     for folder in fx:
         estimate(folder)

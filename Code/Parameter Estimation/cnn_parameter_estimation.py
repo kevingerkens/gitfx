@@ -4,12 +4,12 @@ import pickle
 from pathlib import Path
 import numpy as np
 import keras
-from tensorflow.keras import models, layers, optimizers, utils
+from tensorflow.keras import models, layers, optimizers, utils, backend
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold
 import pandas as pd
 import gc
-from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names
+from cnnfeatextr import DATA_PATH, check_for_feature_data, param_names, get_feat_str
 import plots
 
 
@@ -53,7 +53,6 @@ def add_full(model, n_nodes):
 
 def create_model(input_dim, output_dim, kernel_size, n_conv, n_full, n_nodes, n_filters):
     """creates nn model with architecture corresponding to parameters"""
-    keras.backend.clear_session() 
     model = []
     model = models.Sequential()
     """add first convolutional layer"""
@@ -82,7 +81,12 @@ def train_model(model, X_train, y_train, X_test, y_test):
     utils.normalize(X_train)
     print(X_train.shape)
     print(y_train.shape)
-    history = model.fit(X_train, y_train, epochs=100, batch_size=batch_size, verbose=2, validation_data=(X_test, y_test))
+    if y_train.shape[1] >=4:
+        epochs = 100
+    else:
+        epochs = 70
+    epochs = 5
+    history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, verbose=2, validation_data=(X_test, y_test))
     #plots.learning_curve(history)
 
     return history.history
@@ -103,7 +107,7 @@ def scale_data(X_train, X_test):
 
 
 def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, X_train, X_test, y_train, y_test, feat):
-
+    backend.clear_session()
     nn_setting = feat + '_' + str(n_conv) + '_' + str(kernel_size[0]) + '_' + str(n_full) + '_' + str(n_nodes) + '_' + str(n_filters) + '_' + str(batch_size)
     if not Path('CNNModel' + nn_setting + str(fold_no)).exists():
         print("Creating Model")
@@ -187,7 +191,7 @@ def estimate(fx, feat):
 
         fold_no += 1
 
-    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
+    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting, os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
 
     del X, y, X_train, X_test, y_train, y_test              #   clear memory to save resources
     gc.collect()
@@ -195,6 +199,7 @@ def estimate(fx, feat):
 if __name__ == '__main__':
     feats = ['MFCC40', 'Chroma', 'GFCC40', 'Spec']
     fx_only_mfcc = ['Chorus', 'Phaser', 'Reverb', 'Overdrive']
+    print('CNN parameter estimation')
     for folder in os.listdir(DATA_PATH):
         if not folder in fx_only_mfcc:
             for feat in feats:

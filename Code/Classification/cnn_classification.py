@@ -10,9 +10,9 @@ from sklearn.utils import shuffle
 from sklearn.metrics import confusion_matrix
 import gc
 import tensorflow.keras
-from tensorflow.keras import models, layers, optimizers, utils, metrics
+from tensorflow.keras import models, layers, optimizers, utils, metrics, backend
 from tensorflow.keras.utils import to_categorical	
-from cnn_features_classification import check_data, DATA_PATH
+from cnn_features_classification import check_for_feature_data, DATA_PATH
 
 
 
@@ -32,11 +32,11 @@ def choose_path(path):
     os.chdir(abs_path)
 
 
-def load_features_and_labels(feat):
+def load_features_and_labels(dataset, feat):
     X, y= [], []
     folders = os.listdir(os.getcwd())
     for fx in folders:
-        fxdata, fxlabels = check_data(fx, feat)
+        fxdata, fxlabels = check_for_feature_data(fx, dataset, feat)
         n_smp = fxdata.shape[0]
         labels = np.array([fx]*n_smp)
         X.extend(list(fxdata))
@@ -99,13 +99,14 @@ def train_model(model, train_data, train_labels, test_data, test_labels):
     utils.normalize(train_data)
     print(train_data.shape)
     print(train_labels.shape)
-    history = model.fit(train_data, train_labels, epochs=100, batch_size=64, verbose=2, validation_data = (test_data, test_labels))
+    history = model.fit(train_data, train_labels, epochs=2, batch_size=64, verbose=2, validation_data = (test_data, test_labels))
     return history.history
 
 
 def plot_cm(test_labels, pred, feat):
-    test_labels = np.argmax(test_labels, axis=1)
-    pred = np.argmax(pred, axis=1)
+    if not feat == 'SVM': 
+        test_labels = np.argmax(test_labels, axis=1)
+        pred = np.argmax(pred, axis=1)
     cm = confusion_matrix(test_labels, pred, normalize='true')
     file_name = 'cm'  + '_' + feat + '.pickle'
     print(cm)
@@ -134,6 +135,7 @@ def scale_features(train_data, test_data):
     
 
 def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, train_data, test_data, train_labels, test_labels, feat):
+    backend.clear_session()
 
     nn_setting = feat + '_' + str(n_conv) + '_' + str(kernel_size[0]) + '_' + str(n_full) + '_' + str(n_nodes) + '_' + str(n_filters) + '_' + str(batch_size)
     if not Path('CNNModel' + nn_setting + str(fold_no)).exists():
@@ -158,24 +160,29 @@ def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_
     return my_model
 
 
-def fold_accuracy(y_true_all, pred_all, test_labels, pred, accuracy_all, folders):
+def fold_accuracy(y_true_all, pred_all, test_labels, pred, accuracy_all, fb_sd_all, folders):
     y_true_all.extend(list(test_labels))
     pred_all.extend(list(pred))
     test_labels = np.argmax(np.array(test_labels), axis=1)
     pred = np.argmax(np.array(pred), axis=1)
     cm = confusion_matrix(test_labels, pred, normalize='true')
     accuracy_diagonal = np.sum(np.diagonal(cm))
-    accuracy_diagonal_fb_sd = accuracy_diagonal + cm[2, 8] + cm[8, 2]
-    accuracy_fold = accuracy_diagonal/len(folders)  
+    if accuracy_diagonal.size >=11:
+        accuracy_diagonal_fb_sd = accuracy_diagonal + cm[2, 8] + cm[8, 2]
+    else:
+        accuracy_diagonal_fb_sd = accuracy_diagonal
+    accuracy_fold = accuracy_diagonal/len(folders) 
+    fb_sd_fold = accuracy_diagonal_fb_sd/len(folders) 
     accuracy_all.append(accuracy_fold)
+    fb_sd_all.append(fb_sd_fold)
 
-    return y_true_all, pred_all, accuracy_all
+    return y_true_all, pred_all, accuracy_all, fb_sd_all
 
 
 def prediction(my_model, test_data, test_labels, fold_no):
     pred = my_model.predict(test_data)
     scores = my_model.evaluate(test_data, test_labels, verbose = 0)
-    print('Test Data Accuracy for fold '+ str(fold_no) + ': ') 
+    print('Test Data Loss and Accuracy for fold '+ str(fold_no) + ': ') 
     print(scores)
 
     return pred, scores
@@ -183,6 +190,7 @@ def prediction(my_model, test_data, test_labels, fold_no):
 
 def classification(feat, dataset):
     print(feat)
+    print(dataset)
     os.chdir(os.path.join(DATA_PATH, dataset))
     folders = os.listdir(os.getcwd())
     n_splits = 5
@@ -193,12 +201,12 @@ def classification(feat, dataset):
     n_filters = 32
     batch_size = 64
 
-    data, labels_onehot = load_features_and_labels(feat)
+    data, labels_onehot = load_features_and_labels(dataset, feat)
     
     print('Splitting Dataset into ' + str(n_splits) + ' folds for cross validation')
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
 
-    y_true_all, pred_all, accuracy_all = [], [], []
+    y_true_all, pred_all, accuracy_all, fb_sd_all = [], [], [], []
     fold_no = 1
     for train_index, val_index in kf.split(data):
         print('Fold ' + str(fold_no))
@@ -206,16 +214,18 @@ def classification(feat, dataset):
         train_labels, test_labels = labels_onehot[train_index], labels_onehot[val_index]
         train_data, test_data = scale_features(train_data, test_data)
         
-        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
+        choose_path(os.path.join(DATA_PATH, '..', 'Results/Classification/CNN', dataset))
 
         my_model = get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, train_data, test_data, train_labels, test_labels, feat)
 
         pred, scores = prediction(my_model, test_data, test_labels, fold_no)
-        y_true_all, pred_all, accuracy_all = fold_accuracy(y_true_all, pred_all, test_labels, pred, accuracy_all, folders)
+        y_true_all, pred_all, accuracy_all, fb_sd_all = fold_accuracy(y_true_all, pred_all, test_labels, pred, accuracy_all, fb_sd_all, folders)
         fold_no += 1
 
     confidence_interval(accuracy_all)
-    choose_path(os.path.join(DATA_PATH, '../..', 'Results/Classification/CNN', dataset))
+    print('Confidence interval when FeedbackDelay = SlapbackDelay: ')
+    confidence_interval(fb_sd_all)
+    choose_path(os.path.join(DATA_PATH, '..', 'Results/Classification/CNN', dataset))
     plot_cm(np.array(y_true_all), np.array(pred_all), feat)
     
     del data, labels_onehot, train_data, test_data, train_labels, test_labels

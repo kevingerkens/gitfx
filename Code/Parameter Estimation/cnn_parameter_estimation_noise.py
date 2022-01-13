@@ -3,7 +3,7 @@ import joblib
 import pickle
 from pathlib import Path
 import numpy as np
-from tensorflow.keras import models, layers, optimizers, utils
+from tensorflow.keras import models, layers, optimizers, utils, backend
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import KFold
 import pandas as pd
@@ -40,7 +40,7 @@ def scale_data(train_data, test_data):
     for i in range(train_data.shape[1]):
         scalers[i] = StandardScaler()
         train_data[:, i, :] = scalers[i].fit_transform(train_data[:, i, :])
-    if not test_data == None:
+    if test_data.size > 0:
         for i in range(test_data.shape[1]):
             test_data[:, i, :] = scalers[i].transform(test_data[:, i, :]) 
 
@@ -51,7 +51,7 @@ def scale_data(train_data, test_data):
 
 def get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, feat):
     nn_setting = feat + '_' + str(n_conv) + '_' + str(kernel_size[0]) + '_' + str(n_full) + '_' + str(n_nodes) + '_' + str(n_filters) + '_' + str(batch_size)
-
+    backend.clear_session()
     print("Loading model")
     file_name = 'CNNModel' + nn_setting + str(fold_no)
     my_model = models.load_model(file_name)
@@ -80,7 +80,9 @@ def fold_prediction(my_model, test_data, all_pred, test_labels, all_error, all_y
 
 
 def noise_plots(feat, fold_no, example, label, noise_factor):
+    plt.rcParams["figure.figsize"] = (20.1,9.5)
     if fold_no ==5:
+        example = np.reshape(example, (example.shape[0], example.shape[1]))
         if feat == 'MFCC40' or feat == 'GFCC40':
             fig, ax = plt.subplots()
             sr = 44100
@@ -110,7 +112,7 @@ def noise_plots(feat, fold_no, example, label, noise_factor):
         plt.tight_layout()
         file_name = '_'.join([str(elem) for elem in label])  + '_' + feat  + '_'  + 'alpha=' + str(noise_factor)+ '.pdf'
         plt.savefig(file_name)
-        plt.clf()        
+        plt.close()      
 
 
 def estimate(fx, feat, noise_factor):
@@ -140,19 +142,21 @@ def estimate(fx, feat, noise_factor):
 
         train_data, test_data, _ = scale_data(train_data, test_data)
 
-        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx, 'Noise'))
         noise = np.random.normal(0, np.amax(test_data)*noise_factor, test_data.shape)
         test_data = test_data + noise
-        example = test_data[2500]
-        noise_plots(feat, fold_no, example, test_labels[2500], noise_factor)
+        example = test_data[0]
+        example_label = np.insert(label_test[0], 3, test_labels[0])
+        noise_plots(feat, fold_no, example, example_label, noise_factor)
 
+        choose_path(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation', fx))
         my_model = get_model(n_conv, kernel_size, n_full, n_nodes, n_filters, batch_size, fold_no, feat)
         all_pred, all_error, all_y, all_label = fold_prediction(my_model, test_data, all_pred, test_labels, all_error, all_y, all_label, label_test)
 
         fold_no += 1
 
-    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_noisetest_' + str(noise_factor), os.path.join(DATA_PATH, '../..' + 'Results/Parameter Estimation'))
-
+    create_dataframe(all_pred, all_error, all_y, all_label, fx, nn_setting + '_noisetest_' + str(noise_factor), os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
+ 
     del data, labels, train_data, test_data, train_labels, test_labels              #   clear memory to save resources
     gc.collect()
 

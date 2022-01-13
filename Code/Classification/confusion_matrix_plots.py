@@ -12,7 +12,7 @@ def get_cmlabels(dr):
     mix_labels = ['Chorus', 'Distortion', 'FeedbackDelay', 'Flanger', 'NoFX', 'Overdrive', 'Phaser', 'Reverb', 'SlapbackDelay', 'Tremolo', 'Vibrato']
     idmt_labels = ['Chorus', 'Distortion', 'EQ', 'FeedbackDelay', 'Flanger', 'NoFX', 'Overdrive', 'Phaser', 'Reverb', 'SlapbackDelay', 'Tremolo', 'Vibrato']
 
-    if dr == 'Classification':
+    if dr == 'GEC-GIM':
         return mix_labels
     if dr == 'IDMT':
         return idmt_labels

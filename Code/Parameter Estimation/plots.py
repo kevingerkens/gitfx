@@ -105,4 +105,4 @@ def waveform(sample1=os.path.join(os.path.dirname(__file__), '../..', 'Datasets/
         plt.plot(time, wav)
         plt.show()
 
-waveform()
+

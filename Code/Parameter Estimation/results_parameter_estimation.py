@@ -12,8 +12,7 @@ from cnnfeatextr import DATA_PATH, param_names
 plt.rcParams["font.size"] = 28
 plt.rcParams["figure.figsize"] = (8, 6)
 
-SCALE_PATH = Path("C:/Desktop/Uni/Studienarbeit/Audio/Scaletest")
-EXAMPLE_PATH = Path("C:/Desktop/Uni/Studienarbeit/Audio/Examples")
+
 
 pitch_dict = {
     '40' : 'Low E',
@@ -45,98 +44,6 @@ bp_dict = {
     12 : 'High E'
 }
 
-def spec(dr):
-    os.chdir(EXAMPLE_PATH)
-    os.chdir(dr)
-    #os.chdir(dr + ' Samples')
-    for file_name in os.listdir(os.getcwd()):
-        if file_name.endswith('.wav') and 'REF' in file_name:
-            print(file_name)
-            y, sr = librosa.load(file_name, sr=None)
-            spec = np.abs(librosa.stft(y))
-            fig, ax = plt.subplots()
-            img = librosa.display.specshow(librosa.amplitude_to_db(spec, ref=np.max),
-                                    y_axis='log', x_axis='time', ax=ax, sr=sr)
-            plt.xlabel('Time in s')
-            plt.ylabel('Frequency in Hz')
-            fig.colorbar(img, ax=ax, format="%+2.0f dB")
-        plt.show() 
-          
-
-def mfcc(dr):
-    os.chdir(EXAMPLE_PATH)
-    os.chdir(dr)
-    #os.chdir(dr + ' Samples')
-    for file_name in os.listdir(os.getcwd()):
-        if file_name.endswith('.wav') and 'REF' in file_name:
-            print(file_name)
-            y, sr = librosa.load(file_name, sr=None)
-            mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
-            fig, ax = plt.subplots()
-            img = librosa.display.specshow(mfcc, x_axis='time', ax=ax, sr=sr)
-            plt.xlabel('Time in s')
-            plt.ylabel('Coefficients')
-            plt.yticks([*range(0, 45, 5)])
-            fig.colorbar(img, ax=ax)
-        plt.show() 
-
-
-def chroma(dr):
-    os.chdir(EXAMPLE_PATH)
-    os.chdir(dr)
-    #os.chdir(dr + ' Samples')
-    for file_name in os.listdir(os.getcwd()):
-        if file_name.endswith('.wav') and 'REF' in file_name:
-            print(file_name)
-            y, sr = librosa.load(file_name, sr=None)
-            mfcc = librosa.feature.chroma_stft(y=y, sr=sr)
-            fig, ax = plt.subplots()
-            img = librosa.display.specshow(mfcc, x_axis='time', y_axis='chroma', ax=ax, sr=sr)
-            plt.xlabel('Time in s')
-            #plt.ylabel('Coefficients')
-            #plt.yticks([*range(0, 45, 5)])
-            fig.colorbar(img, ax=ax)
-        plt.show()  
-
-
-def gfcc(dr):
-    os.chdir(EXAMPLE_PATH)
-    os.chdir(dr)
-    #os.chdir(dr + ' Samples')
-    for file_name in os.listdir(os.getcwd()):
-        if file_name.endswith('.wav') and 'REF' in file_name:
-            print(file_name)
-            y, sr = librosa.load(file_name, sr=16000)
-            gfcc = sgfcc.gfcc(y, fs=sr, nfilts=80, num_ceps=40)
-            gfcc = gfcc.T
-            fig, ax = plt.subplots()
-            img = librosa.display.specshow(gfcc, x_axis='time', ax=ax, sr=50.5/16*sr)
-            plt.xlabel('Time in s')
-            plt.ylabel('Coefficients')
-            plt.yticks([*range(0, 45, 5)])
-            fig.colorbar(img, ax=ax)
-        plt.show()  
-
-
-def examples(dr, feat):
-    print(dr)
-    print(feat)
-    os.chdir(EXAMPLE_PATH)
-    os.chdir(dr)
-    os.chdir('Results')
-    df = get_df('df_' + feat + '_2_3_3_64_6_128_Examples.pickle')
-    df['Labels'] = df['Labels'].astype(str)
-    grouped = df.groupby('Labels')
-    for name, group in grouped:
-        print(name)
-        print(group['Mix Volume'].tolist()[0])
-        print(group['Prediction'].mean())
-        print(group['Error'].mean())
-        print(group['Pitch'])
-        print(group['BP'])
-        print(group['VST'])
-        print('\n')
-
 
 def get_df(file_name):
     old_cols = ['Prediction', 'Error', 'Labels', 'Mix Volume']
@@ -158,6 +65,7 @@ def convert_df(file_name):
         df.to_json(file_name[:-7] + '.json')
 
 def df_json():
+    """converts all saved dataframes from pickle to json format"""
     os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
     for dr in os.listdir(os.getcwd()):
         os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
@@ -171,9 +79,6 @@ def df_json():
                     convert_df(file_name)
                 os.chdir('..')
         
-                
-    
-
 
 def get_nn_values(file_name):
     nn_setting = file_name[:-7].split('_')[1:]
@@ -255,6 +160,7 @@ def plot_est_error_over_multparams(df, dr, feat):
     x=np.array(labels)[:, 0]
     y=np.array(labels)[:, 1]
     for param_index, param in enumerate(par_names):
+        print(param)
         x=np.array(labels)[:, param_index]
         c=np.array(errors)[:, param_index]
         error_column_name = param + ' Absolute Error'
@@ -285,6 +191,7 @@ def plot_est_error_over_params(df, dr, feat):
     x=np.array(labels)[:, 0]
     y=np.array(labels)[:, 1]
     for index, par in enumerate(par_names):
+        print(par)
         c=np.array(errors)[:, index]
         plt.xlabel('True ' + par_names[0] + ' Setting')
         plt.ylabel('True ' + par_names[1] + ' Setting')
@@ -294,6 +201,7 @@ def plot_est_error_over_params(df, dr, feat):
 
 
 def plot_error_by_vol(error_vol, par_names, dr, feat):
+    print(dr + ' Mean Error by Volume estimated with ' + feat)
     line_shapes = ['-', ':', '--', '-.', (0, (3, 5, 1, 5, 1, 5)), (0, (3, 10, 1, 10))]
     markers = ['o', 's', '^', 'v', 'd', 'P']
     error = error_vol[:, :-1]
@@ -317,7 +225,6 @@ def multcomp(dr):
     dr_list.sort(key=len)
     for folder in dr_list:
         if dr in folder:
-            print(folder)
             os.chdir(folder)
             file_name =  'df_Spec_2_3_3_64_6_128.pickle'
             df = get_df(file_name)
@@ -370,7 +277,9 @@ def plot_errorbp(error, par_names):
 def plot_featbp(feats, error, j_error, par_names, dr):
     error.append(list(j_error))
     feats.append('Jürgens et al.')
+    print('Absolute Error')
     for index, par in enumerate(par_names):
+        print(par)
         plt.boxplot(np.array(error)[:, :, index].T, whis=1.5)
         plt.xticks([1, 2, 3, 4, 5], feats)
         xmax = len(par_names) * 2 + 1.5
@@ -403,8 +312,12 @@ def plot_over_noise(dr, feat_list, error):
     markers = ['o', 's', '^', 'v']
     par_names = param_names(dr)
     error = np.array(error)
-    print(error)
+    for feat_index, feat in enumerate(feat_list):
+        print('CNN + ' + feat)
+        for factor_index, factor in enumerate(factors): 
+            print('Mean Error w/ Noise Factor alpha = ' + str(factor) + ': ' + str(error[feat_index*len(feat_list) + factor_index]))
     for j, par_error in enumerate(error.T):
+        print(par_names[j])
         for i, feat in enumerate(feat_list):
             pf_error = par_error[i*len(factors):i*len(factors)+len(factors)]
             plt.xticks(range(len(factors)), factors.astype(str))
@@ -422,7 +335,10 @@ def transform_scale_df(file_name, vol):
     grouped = df.groupby('Mix Volume')
     group = grouped.get_group(vol)
     grouped = group.groupby('BP')
-    df_grouped = group.drop(grouped.get_group('bp0').index)
+    if 'bp0' in grouped.groups.keys():
+        df_grouped = group.drop(grouped.get_group('bp0').index)
+    else:
+        df_grouped = group
 
     return df_grouped
 
@@ -467,8 +383,9 @@ def scale_comparison():
             for i, par in enumerate(par_names):
                 for j, feat in enumerate(feat_list):
                     x, y = zip(*sorted(zip(all_labels[j], all_errors[j, :, i])))
-                    plt.xticks(x, list(bp_dict.values()))
-                    plt.plot(y, label = feat + ' ' + par, linestyle = line_shapes[j], marker = markers[j], linewidth=3, markersize=12)
+                    #pitch_dict = { index: bp_dict[index] for index in x }
+                    plt.xticks(list(bp_dict.keys()), list(bp_dict.values()))
+                    plt.plot(x, y, label = feat + ' ' + par, linestyle = line_shapes[j], marker = markers[j], linewidth=3, markersize=12)
                 plt.xlabel('Bass and Piano Pitch')
                 plt.ylabel('Mean Absolute Error')
                 plt.legend(loc=2)
@@ -512,6 +429,14 @@ def noise_error(dr, all_noise_errors, file_name):
     return all_noise_errors
 
 
+def mean_errors_overview(feat_list, all_mean_errors, all_conf, par_names):
+    for feat_index, feat in enumerate(feat_list):
+        print(feat)
+        print(par_names)
+        print('Mean Error: ' + str(all_mean_errors[feat_index]))
+        print('Confidence interval range: +-' + str(all_conf[feat_index]))
+
+
 def result_plots(dr):
     print(dr)
     basefx = ['Distortion', 'Tremolo', 'SlapbackDelay'] #list of fx for which all single fx plots can be created
@@ -553,10 +478,8 @@ def result_plots(dr):
         all_mean_errors.append(j_me)
         all_conf.append(j_ci)
         plot_featbp(feat_list, comp_error, j_error, par_names, dr)
-    print(feat_list)
     print('Mean Error and confidence interval range of all models:')
-    print(np.array(all_mean_errors))
-    print(np.array(all_conf))
+    mean_errors_overview(feat_list, all_mean_errors, all_conf, par_names)
     print('\n' + '='*60 + '\n')
     os.chdir(os.path.join(DATA_PATH, '../..', 'Results/Parameter Estimation'))
 
