@@ -25,8 +25,6 @@ This repository contains the source code for [1]. The paper compares different m
 
 The repository also contains the necessary scripts to generate the two new datasets via Reaper's ReaScript feature. The functionality of these scripts has only been tested on Windows 10.
 
-### Installation
-
 1. Install Reaper (Version 6.29 or higher).
 2. Install all VST plugins listed in plugins.txt into the same folder. Alternatively, you can download them as a bundle from https://seafile.cloud.uni-hannover.de/f/44fd04c113d749c7b175/?dl=1/. Sonivox Bright Electric Guitar and Ample Guitar LP are paid plugins, so you need to activate a license.
 3. Add the path to these plugins to the list of VST plugin paths in Reaper via Options > Preferences > Media > VST. Re-scan to make sure the plugins are available.
@@ -34,7 +32,8 @@ The repository also contains the necessary scripts to generate the two new datas
 5. Make sure Reaper outputs mono files with a sampling rate of 44.1 kHz and a bit depth of 16 bit in the menu revealed by clicking File > Render. Uncheck the 'Tail' option.
 6. Install Python 3.9.2 or higher and enable Python usage via Options > Preferences > Plug-Ins > ReaScript in Reaper.
 7. Load the necessary scripts via Actions > Action list: Classification/dataset_classification, Classification/reaper_utility.py, Parameter Estimation/dataset_parameter_estimation and Parameter/Estimation/reaper_utility.py, Parameter/Estimation/testset_scale.py and Parameter Estimation/dataset_parameter_estimation_additional.py.
-8. To generate the GEC-GIM classification dataset, run the dataset_classification.py script via the Actions list. For the GEPE-GIM parameter estimation dataset, run the dataset_parameter_estimation.py script. For the four additional effects Chorus, Phaser, Overdrive and Reverb for the parameter estimation, run the dataset_parameter_estimation_additional.py script. For the GEPE-GIM Pitch Changes test dataset, run the testset_scale.py script.
+8. Change the 'repo_directory' variable in the scripts to the directory where the particular script ist stored.
+9. To generate the GEC-GIM classification dataset, run the dataset_classification.py script via the Actions list. For the GEPE-GIM parameter estimation dataset, run the dataset_parameter_estimation.py script. For the four additional effects Chorus, Phaser, Overdrive and Reverb for the parameter estimation, run the dataset_parameter_estimation_additional.py script. For the GEPE-GIM Pitch Changes test dataset, run the testset_scale.py script.
 
 If you use this code or the datasets (except IDMT) in your work, please cite [1].
 
