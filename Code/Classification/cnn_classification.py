@@ -99,7 +99,7 @@ def train_model(model, train_data, train_labels, test_data, test_labels):
     utils.normalize(train_data)
     print(train_data.shape)
     print(train_labels.shape)
-    history = model.fit(train_data, train_labels, epochs=2, batch_size=64, verbose=2, validation_data = (test_data, test_labels))
+    history = model.fit(train_data, train_labels, epochs=100, batch_size=64, verbose=2, validation_data = (test_data, test_labels))
     return history.history
 
 
