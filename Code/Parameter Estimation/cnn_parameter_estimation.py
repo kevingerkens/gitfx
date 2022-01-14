@@ -85,7 +85,6 @@ def train_model(model, X_train, y_train, X_test, y_test):
         epochs = 100
     else:
         epochs = 70
-    epochs = 5
     history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, verbose=2, validation_data=(X_test, y_test))
     #plots.learning_curve(history)
 
