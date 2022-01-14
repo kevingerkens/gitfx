@@ -88,7 +88,10 @@ def check_for_feature_data(dr, dataset, feat=None):
         np.savez('GFCC40.npz', gfcc)
         np.savez('CNNLabels.npz', labels)
         print('All Data saved')
-        data = get_feat_str(feat, spec, chroma, mfcc, gfcc)
+        if feat in ['Spec', 'Chroma', 'MFCC40', 'GFCC40']:
+            data = get_feat_str(feat, spec, chroma, mfcc, gfcc)
+        else:
+            data = [0]
     else:
         print('Loading feature data and labels')
         if type(feat) == str:
