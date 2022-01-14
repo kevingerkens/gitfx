@@ -1,0 +1,1 @@
+conda env create -f environment.yml & conda activate guitarfx & pip install h5py==2.10.0 & conda install -c conda-forge librosa=0.8.1 & pip install praat-parselmouth==0.4.0 & pip install spafe==0.1.2 & pip install scikit-image==0.18.3 & pip install seaborn==0.11.2 & pip install pandas==1.3.0 --upgrade
