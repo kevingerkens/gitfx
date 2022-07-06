@@ -48,7 +48,7 @@ def plot_cnn_features(data, feature):
         ylabel = 'Coefficients'
         format = None
         plt.yticks([*range(0, 45, 5)])
-        sr = sr*1,1445
+        sr = sr*1.1445
 
     elif feature == 'Chroma':
         y_axis = 'chroma'
